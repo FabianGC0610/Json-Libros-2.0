@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BaseLibros2.0</string>
+    <string name="tv_iniciar_sesion">Iniciar Sesion</string>
+    <string name="hint_correo">Ingresa tu correo</string>
+    <string name="hint_contrasena">Ingresa tu contrasena</string>
+    <string name="btn_ingresar">Ingresar</string>
+    <string name="hint_dispositivo">Nombre del dispositivo</string>
+    <string name="hint_Token">Aqui saldra tu token</string>
+    <string name="tv_token_string">Tu token es %s</string>
+</resources>
