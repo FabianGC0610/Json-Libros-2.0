@@ -1,5 +1,6 @@
 package mx.kodemia.baselibros20
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,8 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import mx.kodemia.baselibros20.extra.iniciarSesion
+import mx.kodemia.baselibros20.extra.validarSesion
 import org.json.JSONObject
 
 class Login : AppCompatActivity() {
@@ -25,9 +28,11 @@ class Login : AppCompatActivity() {
     private lateinit var til_dispositivo: TextInputLayout
     private lateinit var tiet_dispositivo: TextInputEditText
     private lateinit var btn_ingresar:Button
-    private lateinit var tv_token:TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if(validarSesion(applicationContext)){
+            lanzarActivity()
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         init()
@@ -41,28 +46,33 @@ class Login : AppCompatActivity() {
         til_dispositivo = findViewById(R.id.til_dispositivo)
         tiet_dispositivo = findViewById(R.id.tiet_dispositivo)
         btn_ingresar = findViewById(R.id.btn_ingresar)
-        tv_token = findViewById(R.id.tv_token)
 
         btn_ingresar.setOnClickListener {
             val cola = Volley.newRequestQueue(applicationContext)
-            val url = "https://playground-bookstore.herokuapp.com/api/v1/login"
             val JsonObj:JSONObject = JSONObject()
             JsonObj.put("email", tiet_correo.text)
             JsonObj.put("password", tiet_contrasena.text)
             JsonObj.put("device_name", tiet_dispositivo.text)
-            val peticion = JsonObjectRequest(Request.Method.POST, url,JsonObj, Response.Listener {
+            val peticion = JsonObjectRequest(Request.Method.POST, getString(R.string.url_servidor)+getString(R.string.api_login),JsonObj, Response.Listener {
                 response ->
                 Log.d(TAG,response.toString())
                 val json = JSONObject(response.toString())
-                val TOKEN = json["plain-text-token"]
-
-                tv_token.visibility = View.VISIBLE
-                tv_token.text = getString(R.string.tv_token_string,TOKEN)
+                //val TOKEN = json["plain-text-token"]
+                iniciarSesion(applicationContext,json)
+                if(validarSesion(applicationContext)){
+                    lanzarActivity()
+                }
             },{
                 error ->
                 Log.e(TAG,error.toString())
             })
             cola.add(peticion)
         }
+    }
+    fun lanzarActivity(){
+        val intent = Intent(this, MainActivity::class.java)
+        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+        finish()
     }
 }
