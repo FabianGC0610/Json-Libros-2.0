@@ -245,7 +245,15 @@ class Login : AppCompatActivity() {
         pb_login = findViewById(R.id.pb_login)
 
         btn_ingresar.setOnClickListener {
-            if (validarCorreo() && validarContrasena()) {
+            val listaBool = listOf<Boolean>(validarCorreo(),validarContrasena())
+            var contador = 0
+            for(validacion in listaBool){
+                if(validacion == false){
+                    contador++
+                }
+            }
+            if(contador<1){
+                contador = 0
                 realizarPeticion()
             }
         }

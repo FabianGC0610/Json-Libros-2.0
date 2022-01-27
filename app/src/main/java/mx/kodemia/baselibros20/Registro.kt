@@ -47,7 +47,15 @@ class Registro : AppCompatActivity() {
         btn_registrar = findViewById(R.id.btn_registrar)
 
         btn_registrar.setOnClickListener {
-            if(validarNombre() && validarCorreo() && validarContrasena() && validarContrasenaDos()){
+            val listaBool = listOf<Boolean>(validarNombre(),validarCorreo(),validarContrasena(),validarContrasenaDos())
+            var contador = 0
+            for(validacion in listaBool){
+                if(validacion == false){
+                    contador++
+                }
+            }
+            if(contador<1){
+                contador = 0
                 realizarPeticion()
             }
         }
