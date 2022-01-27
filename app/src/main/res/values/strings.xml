@@ -8,6 +8,11 @@
     <!--Metodos de API-->
     <string name="api_login">login</string>
 
+    <!--Errores-->
+    <string name="error_internet">No tienes internet Karnal</string>
+    <string name="campo_vacio">Campo vacio</string>
+    <string name="error_correo">Correo no valido</string>
+
     <string name="app_name">BaseLibros2.0</string>
     <string name="tv_iniciar_sesion">Iniciar Sesion</string>
     <string name="hint_correo">Ingresa tu correo</string>
@@ -23,4 +28,7 @@
     <string name="hint_registro_contrasena">Contrasena</string>
     <string name="hint_registro_contrasena_dos">Confirmar  contrasena</string>
     <string name="btn_registrar">Registrar</string>
+    <string name="tv_cuenta">No tienes cuenta</string>
+    <string name="tv_registra">Registrate aqui</string>
+    <string name="api_registro">register</string>
 </resources>

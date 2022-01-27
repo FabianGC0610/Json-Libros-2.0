@@ -4,7 +4,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -14,13 +17,11 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import kotlinx.serialization.json.Json
 import mx.kodemia.baselibros20.dataclass.Empleado
-import mx.kodemia.baselibros20.extra.eliminarSesion
-import mx.kodemia.baselibros20.extra.iniciarSesion
-import mx.kodemia.baselibros20.extra.validarSesion
 import org.json.JSONObject
 import java.lang.Exception
 import kotlinx.serialization.decodeFromString
 import mx.kodemia.baselibros20.dataclasslibros.Data
+import mx.kodemia.baselibros20.extra.*
 
 class Login : AppCompatActivity() {
 
@@ -33,6 +34,8 @@ class Login : AppCompatActivity() {
     private lateinit var til_dispositivo: TextInputLayout
     private lateinit var tiet_dispositivo: TextInputEditText
     private lateinit var btn_ingresar:Button
+    private lateinit var pb_login: ProgressBar
+    private lateinit var  tv_registrate: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         eliminarSesion(applicationContext) //Para no estar iniciando sesion
@@ -231,7 +234,7 @@ class Login : AppCompatActivity() {
         }
     }
 
-    fun init(){
+    fun init() {
         til_correo = findViewById(R.id.til_correo)
         tiet_correo = findViewById(R.id.tiet_correo)
         til_contrasena = findViewById(R.id.til_contrasena)
@@ -239,15 +242,61 @@ class Login : AppCompatActivity() {
         til_dispositivo = findViewById(R.id.til_dispositivo)
         tiet_dispositivo = findViewById(R.id.tiet_dispositivo)
         btn_ingresar = findViewById(R.id.btn_ingresar)
+        pb_login = findViewById(R.id.pb_login)
 
         btn_ingresar.setOnClickListener {
+            if (validarCorreo() && validarContrasena()) {
+                realizarPeticion()
+            }
+        }
+        tv_registrate = findViewById(R.id.tv_registrate)
+        tv_registrate.setOnClickListener {
+            startActivity(Intent(this,Registro::class.java))
+        }
+    }
+    fun lanzarActivity(){
+        val intent = Intent(this, MainActivity::class.java)
+        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun validarCorreo(): Boolean{
+        return if(tiet_correo.text.toString().isEmpty()){
+            til_correo.error = getString(R.string.campo_vacio)
+            false
+        }else{
+            if(android.util.Patterns.EMAIL_ADDRESS.matcher(tiet_correo.text.toString()).matches()){
+                til_correo.isErrorEnabled = false
+                true
+            }else{
+                til_correo.error = getString(R.string.error_correo)
+                false
+            }
+        }
+    }
+
+    private fun validarContrasena(): Boolean{
+        return if(tiet_contrasena.text.toString().isEmpty()){
+            til_contrasena.error = getString(R.string.campo_vacio)
+            false
+        }else{
+            til_contrasena.isErrorEnabled = false
+            true
+        }
+    }
+
+    fun realizarPeticion(){
+        if(estaEnLinea(applicationContext)){
+            btn_ingresar.visibility = View.GONE
+            pb_login.visibility = View.VISIBLE
             val cola = Volley.newRequestQueue(applicationContext)
             val JsonObj:JSONObject = JSONObject()
             JsonObj.put("email", tiet_correo.text)
             JsonObj.put("password", tiet_contrasena.text)
             JsonObj.put("device_name", tiet_dispositivo.text)
-            val peticion = JsonObjectRequest(Request.Method.POST, getString(R.string.url_servidor)+getString(R.string.api_login),JsonObj, Response.Listener {
-                response ->
+            val peticion = JsonObjectRequest(Request.Method.POST,getString(R.string.url_servidor)+getString(R.string.api_login),JsonObj, Response.Listener {
+                    response ->
                 Log.d(TAG,response.toString())
                 val json = JSONObject(response.toString())
                 //val TOKEN = json["plain-text-token"]
@@ -256,16 +305,14 @@ class Login : AppCompatActivity() {
                     lanzarActivity()
                 }
             },{
-                error ->
+                    error ->
+                btn_ingresar.visibility = View.VISIBLE
+                pb_login.visibility = View.GONE
                 Log.e(TAG,error.toString())
             })
             cola.add(peticion)
+        }else{
+            mensajeEmergente(this,getString(R.string.error_internet))
         }
-    }
-    fun lanzarActivity(){
-        val intent = Intent(this, MainActivity::class.java)
-        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        startActivity(intent)
-        finish()
     }
 }
