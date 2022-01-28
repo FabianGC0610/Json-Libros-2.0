@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.VolleyLog
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.textfield.TextInputEditText
@@ -20,6 +21,7 @@ import mx.kodemia.baselibros20.dataclass.Empleado
 import org.json.JSONObject
 import java.lang.Exception
 import kotlinx.serialization.decodeFromString
+import mx.kodemia.baselibros20.dataclass.Errors
 import mx.kodemia.baselibros20.dataclasslibros.Data
 import mx.kodemia.baselibros20.extra.*
 
@@ -295,6 +297,7 @@ class Login : AppCompatActivity() {
     }
 
     fun realizarPeticion(){
+        VolleyLog.DEBUG = true
         if(estaEnLinea(applicationContext)){
             btn_ingresar.visibility = View.GONE
             pb_login.visibility = View.VISIBLE
@@ -303,11 +306,9 @@ class Login : AppCompatActivity() {
             JsonObj.put("email", tiet_correo.text)
             JsonObj.put("password", tiet_contrasena.text)
             JsonObj.put("device_name", tiet_dispositivo.text)
-            val peticion = JsonObjectRequest(Request.Method.POST,getString(R.string.url_servidor)+getString(R.string.api_login),JsonObj, Response.Listener {
+            val peticion = object: JsonObjectRequest(Request.Method.POST,getString(R.string.url_servidor)+getString(R.string.api_login),JsonObj, Response.Listener {
                     response ->
-                Log.d(TAG,response.toString())
                 val json = JSONObject(response.toString())
-                //val TOKEN = json["plain-text-token"]
                 iniciarSesion(applicationContext,json)
                 if(validarSesion(applicationContext)){
                     lanzarActivity()
@@ -316,8 +317,24 @@ class Login : AppCompatActivity() {
                     error ->
                 btn_ingresar.visibility = View.VISIBLE
                 pb_login.visibility = View.GONE
-                Log.e(TAG,error.toString())
-            })
+                /*if(error.networkResponse.statusCode == 422){
+                    // Realizamos una accion muy especifica para el error de 422
+                }*/
+                val json = JSONObject(String(error.networkResponse.data, Charsets.UTF_8))
+                val errors = Json.decodeFromString<Errors>(json.toString())
+                for (error in errors.errors){
+                    mensajeEmergente(this,error.detail)
+                }
+                Log.e(TAG, error.networkResponse.toString())
+                Log.e(TAG, error.toString())
+            }){
+                override fun getHeaders(): MutableMap<String, String> {
+                    val headers = HashMap<String,String>()
+                    headers["Accept"] = "application/json"
+                    headers["Content-type"] = "application/json"
+                    return headers
+                }
+            }
             cola.add(peticion)
         }else{
             mensajeEmergente(this,getString(R.string.error_internet))

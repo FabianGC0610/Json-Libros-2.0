@@ -12,4 +12,4 @@ data class Attributes(
     val createdat: String,
     @SerialName("updated-at")
     val updatedat: String
-)
+): java.io.Serializable

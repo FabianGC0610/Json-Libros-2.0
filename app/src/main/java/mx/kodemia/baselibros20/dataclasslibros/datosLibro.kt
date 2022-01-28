@@ -9,4 +9,4 @@ data class datosLibro(
     val attributes: Attributes,
     val relationships: Relationships,
     val links: Links
-)
+): java.io.Serializable

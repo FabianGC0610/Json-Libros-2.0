@@ -7,6 +7,14 @@
 
     <!--Metodos de API-->
     <string name="api_login">login</string>
+    <string name="api_libros">books</string>
+    <string name="api_registro">register</string>
+
+    <!--String para item de book-->
+    <string name="tv_titulo">Titulo: %s</string>
+    <string name="tv_content">Content: %s</string>
+    <string name="tv_type">Type: %s</string>
+    <string name="tv_link">Link: %s</string>
 
     <!--Errores-->
     <string name="error_internet">No tienes internet Karnal</string>
@@ -30,5 +38,5 @@
     <string name="btn_registrar">Registrar</string>
     <string name="tv_cuenta">No tienes cuenta</string>
     <string name="tv_registra">Registrate aqui</string>
-    <string name="api_registro">register</string>
+
 </resources>

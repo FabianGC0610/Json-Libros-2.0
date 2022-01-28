@@ -73,9 +73,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="@string/btn_ingresar"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/til_contrasena"
                 app:layout_constraintStart_toStartOf="@+id/til_contrasena"
                 app:layout_constraintTop_toBottomOf="@+id/til_dispositivo" />
@@ -103,23 +101,19 @@
                 style="?android:attr/progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/til_dispositivo" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_ingresar" />
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="@string/tv_cuenta"
-                app:layout_constraintEnd_toEndOf="@+id/btn_ingresar"
-                app:layout_constraintStart_toStartOf="@+id/btn_ingresar"
-                app:layout_constraintTop_toBottomOf="@+id/btn_ingresar" />
+                app:layout_constraintEnd_toEndOf="@+id/pb_login"
+                app:layout_constraintStart_toStartOf="@+id/pb_login"
+                app:layout_constraintTop_toBottomOf="@+id/pb_login" />
 
             <TextView
                 android:id="@+id/tv_registrate"

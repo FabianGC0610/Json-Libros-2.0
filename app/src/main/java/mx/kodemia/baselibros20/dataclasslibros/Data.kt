@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Data(
-    val data: List<datosLibro>
-)
+    val data: MutableList<datosLibro>
+): java.io.Serializable

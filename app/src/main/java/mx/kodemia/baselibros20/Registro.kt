@@ -10,6 +10,9 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import mx.kodemia.baselibros20.dataclass.Errors
 import mx.kodemia.baselibros20.extra.estaEnLinea
 import mx.kodemia.baselibros20.extra.iniciarSesion
 import mx.kodemia.baselibros20.extra.mensajeEmergente
@@ -70,20 +73,31 @@ class Registro : AppCompatActivity() {
             json.put("password_confirmation", tiet_res_contrasena_dos.text)
             json.put("device_name","Solovino's phone")
             val cola = Volley.newRequestQueue(applicationContext)
-            val peticion = JsonObjectRequest(Request.Method.POST,getString(R.string.url_servidor)+getString(R.string.api_registro),json, {
+            val peticion = object: JsonObjectRequest(Request.Method.POST,getString(R.string.url_servidor)+getString(R.string.api_registro),json, {
                     response ->
                 Log.d(TAG,response.toString())
                 val jsonObject = JSONObject(response.toString())
                 iniciarSesion(applicationContext,jsonObject)
                 val intent = Intent(this,MainActivity::class.java)
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
                 finish()
                 },{
                     error ->
-                    Log.e(TAG,error.toString())
-            })
+                val json = JSONObject(String(error.networkResponse.data, Charsets.UTF_8))
+                val errors = Json.decodeFromString<Errors>(json.toString())
+                for (error in errors.errors) {
+                    mensajeEmergente(this, error.detail)
+                }
+                Log.e(TAG,error.toString())
+            }){
+                override fun getHeaders(): MutableMap<String, String> {
+                    val headers = HashMap<String,String>()
+                    headers["Accept"] = "application/json"
+                    headers["Content-type"] = "application/json"
+                    return headers
+                }
+            }
             cola.add(peticion)
         }else{
             mensajeEmergente(this,getString(R.string.error_internet))
